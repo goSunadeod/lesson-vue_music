@@ -28,6 +28,9 @@
                 <img class="image" :src="currentSong.image">
               </div>
             </div>
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric">{{playingLyric}}</div>
+            </div>
           </div>
           <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
             <div class="lyric-wrapper">
@@ -124,7 +127,8 @@ export default {
       currentTime: 0,
       currentLyric: null,
       currentLineNum: 0,
-      currentShow: 'cd'
+      currentShow: 'cd',
+      playingLyric: ''
     }
   },
   computed: {
@@ -209,6 +213,9 @@ export default {
         return
       }
       this.setPlayingState(!this.playing)
+      if (this.currentLyric) {
+        this.currentLyric.togglePlay()
+      }
     },
     end() {
       if (this.mode === playMode.loop) {
@@ -220,9 +227,16 @@ export default {
     loop() {
       this.$refs.audio.currentTime = 0
       this.$refs.audio.play()
+      if (this.currentLyric) {
+        this.currentLyric.seek(0)
+      }
     },
     next() {
       if (!this.songReady) {
+        return
+      }
+      if (this.playlist.length === 1) {
+        this.loop()
         return
       }
       let index = this.currentIndex + 1
@@ -237,6 +251,10 @@ export default {
     },
     prev() {
       if (!this.songReady) {
+        return
+      }
+      if (this.playlist.length === 1) {
+        this.loop()
         return
       }
       let index = this.currentIndex - 1
@@ -266,9 +284,13 @@ export default {
       return `${minute}:${second}`
     },
     onProgressBarChange(percent) {
-      this.$refs.audio.currentTime = percent * this.currentSong.duration
+      const currentTime = percent * this.currentSong.duration
+      this.$refs.audio.currentTime = currentTime
       if (!this.playing) {
         this.togglePlaying()
+      }
+      if (this.currentLyric) {
+        this.currentLyric.seek(currentTime * 1000)
       }
     },
     changeMode() {
@@ -293,6 +315,10 @@ export default {
         if (this.playing) {
           this.currentLyric.play()
         }
+      }).catch(() => {
+        this.currentLyric = null
+        this.playingLyric = ''
+        this.currentLineNum = 0
       })
     },
     handleLyric({lineNum, txt}) {
@@ -303,9 +329,12 @@ export default {
       } else {
         this.$refs.lyricList.scrollTo(0, 0, 1000)
       }
+      this.playingLyric = txt
     },
     middleTouchStart(e) {
       this.touch.initiated = true
+      // 用来判断是否是一次移动
+      this.touch.moved = false
       const touch = e.touches[0]
       this.touch.startX = touch.pageX
       this.touch.startY = touch.pageY
@@ -320,6 +349,9 @@ export default {
       if (Math.abs(deltaY) > Math.abs(deltaX)) {
         return
       }
+      if (!this.touch.moved) {
+        this.touch.moved = true
+      }
       const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
       const offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
       this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
@@ -329,6 +361,9 @@ export default {
       this.$refs.middleL.style[transitionDuration] = 0
     },
     middleTouchEnd(e) {
+      if (!this.touch.moved) {
+        return
+      }
       let offsetWidth
       let opacity
       if (this.currentShow === 'cd') {
@@ -390,10 +425,13 @@ export default {
   watch: {
     currentSong(newSong, oldSong) {
       if (newSong.id === oldSong.id) return
-      this.$nextTick(() => {
+      if (this.currentLyric) {
+        this.currentLyric.stop()
+      }
+      setTimeout(() => {
         this.$refs.audio.play()
         this.getLyric()
-      })
+      }, 1000)
     },
     playing(newPlaying) {
       const audio = this.$refs.audio
