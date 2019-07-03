@@ -1,4 +1,4 @@
-import {getLyric} from 'api/song'
+import {getLyric, getMusic} from 'api/song'
 import {ERR_OK} from 'api/config'
 import {Base64} from 'js-base64'
 
@@ -44,7 +44,7 @@ export function createSong(musicData, songVKey) {
   })
 }
 
-function filterSinger(singer) {
+export function filterSinger(singer) {
   let ret = []
   if (!singer) {
     return ''
@@ -53,4 +53,23 @@ function filterSinger(singer) {
     ret.push(s.name)
   })
   return ret.join('/')
+}
+
+export function createNewSong(musicData) {
+  getMusic(musicData.songmid).then(res => {
+    if (res.code === ERR_OK) {
+      const svkey = res.data.items
+      const songVKey = svkey[0].vkey
+      return new Song({
+        id: musicData.songid,
+        mid: musicData.songmid,
+        singer: filterSinger(musicData.singer),
+        name: musicData.songname,
+        album: musicData.albumname,
+        duration: musicData.interval,
+        image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
+        url: `http://dl.stream.qqmusic.qq.com/C400${musicData.songmid}.m4a?vkey=${songVKey}&guid=1819638027&uin=0&fromtag=66`
+      })
+    }
+  })
 }
