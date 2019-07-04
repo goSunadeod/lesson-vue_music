@@ -18,7 +18,7 @@ export function search(query, page, zhida, perpage) {
   const data = Object.assign({}, commonParams, {
     w: query,
     p: page,
-    perpage: 20,
+    perpage,
     n: perpage,
     catZhida: zhida ? 1 : 0,
     zhidaqu: 1,
