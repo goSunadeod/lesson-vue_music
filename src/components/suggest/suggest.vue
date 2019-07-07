@@ -6,7 +6,7 @@
           ref="suggest"
   >
     <ul class="suggest-list">
-      <li v-for="(item, index) in result" :key="index" class="suggest-item">
+      <li @click="selectItem(item)" v-for="(item, index) in result" :key="index" class="suggest-item">
         <div class="icon">
           <i :class="getIconCls(item)"></i>
         </div>
@@ -25,6 +25,9 @@ import {ERR_OK} from 'api/config'
 import {createSong} from 'common/js/song'
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
+import Singer from 'common/js/singer'
+import {mapMutations, mapActions} from 'vuex'
+import {getMusic} from 'api/song'
 
 const TYPE_SINGER = 'singer'
 const perpage = 20
@@ -88,6 +91,27 @@ export default {
         return `${item.name}-${item.singer}`
       }
     },
+    selectItem(item) {
+      if (item.type === TYPE_SINGER) {
+        const singer = new Singer({
+          id: item.singermid,
+          name: item.singername
+        })
+        this.$router.push({
+          path: `search/${singer.id}`
+        })
+        this.setSinger(singer)
+      } else {
+        getMusic(item.mid).then(res => {
+          if (res.code === ERR_OK) {
+            const svkey = res.data.items
+            const songVKey = svkey[0].vkey
+            item.url = `http://dl.stream.qqmusic.qq.com/C400${item.mid}.m4a?vkey=${songVKey}&guid=1819638027&uin=0&fromtag=66`
+            this.insertSong(item)
+          }
+        })
+      }
+    },
     _checkMore(data) {
       const song = data.song
       if (!song.list.length || (song.curnum + song.curpage * perpage) > song.totalnum) {
@@ -117,7 +141,13 @@ export default {
         }
       }
       return ret
-    }
+    },
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    }),
+    ...mapActions([
+      'insertSong'
+    ])
   }
 }
 </script>
