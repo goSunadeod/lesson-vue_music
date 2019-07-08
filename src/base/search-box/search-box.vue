@@ -1,12 +1,13 @@
 <template>
   <div class="search-box">
     <i class="icon-search"></i>
-    <input class="box" v-model.trim="query" :placeholder="placeholder" />
+    <input ref="query" class="box" v-model.trim="query" :placeholder="placeholder" />
     <i @click="clear" v-show="query" class="icon-dismiss"></i>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+import {debounce} from 'common/js/util'
 export default {
   props: {
     placeholder: {
@@ -25,13 +26,16 @@ export default {
     },
     setQuery(query) {
       this.query = query
+    },
+    blur() {
+      this.$refs.query.blur()
     }
   },
   created() {
-    // Todo 为什么要用回调 不用watch
-    this.$watch('query', (newQuery) => {
+    // 为什么要用回调 不用watch 是因为初始化节流
+    this.$watch('query', debounce((newQuery) => {
       this.$emit('query', newQuery)
-    })
+    }, 200))
   }
 }
 </script>
