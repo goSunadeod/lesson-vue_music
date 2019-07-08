@@ -117,6 +117,7 @@ export default {
           }
         })
       }
+      this.$emit('select')
     },
     listScroll() {
       this.$emit('listScroll')
