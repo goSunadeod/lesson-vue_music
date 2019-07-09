@@ -73,6 +73,9 @@ export default {
         }
       })
     },
+    refresh() {
+      this.$refs.suggest.refresh()
+    },
     searchMore() {
       if (!this.hasMore) return
       this.page++
