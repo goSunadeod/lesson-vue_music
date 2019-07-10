@@ -1,3 +1,4 @@
+// 均匀获得两个数字之间的随机数
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
@@ -14,6 +15,7 @@ export function shuffle(arr) {
   return _arr
 }
 
+// 节流
 export function debounce(func, delay) {
   let timer
   return function (...args) {
@@ -24,4 +26,16 @@ export function debounce(func, delay) {
       func.apply(this, args)
     }, delay)
   }
+}
+
+// 深拷贝
+export function deepCopy(obj) {
+  if (typeof obj !== 'object') return
+  var newObj = obj instanceof Array ? [] : {}
+  for (var key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      newObj[key] = typeof obj[key] === 'object' ? deepCopy(obj[key]) : obj[key]
+    }
+  }
+  return newObj
 }

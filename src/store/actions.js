@@ -1,6 +1,6 @@
 import * as types from './mutation-types'
 import {playMode} from 'common/js/config'
-import {shuffle} from 'common/js/util'
+import {shuffle, deepCopy} from 'common/js/util'
 import {saveSearch, deleteSearch, clearSearch} from 'common/js/cache'
 
 function findIndex(list, song) {
@@ -34,8 +34,8 @@ export const randomPlay = function ({commit}, {list}) {
 }
 
 export const insertSong = function ({commit, state}, song) {
-  let playlist = JSON.parse(JSON.stringify(state.playlist))
-  let sequenceList = JSON.parse(JSON.stringify(state.sequenceList))
+  let playlist = deepCopy(state.playlist)
+  let sequenceList = deepCopy(state.sequenceList)
   let currentIndex = state.currentIndex
   // 首先记录当前歌曲
   let currentSong = playlist[currentIndex]
@@ -84,4 +84,26 @@ export const deleteSearchHistory = function({commit}, query) {
 
 export const clearSearchHistory = function ({commit}) {
   commit(types.SET_SEARCH_HISTORY, clearSearch())
+}
+
+export const deleteSong = function({commit, state}, song) {
+  let playlist = deepCopy(state.playlist)
+  let sequenceList = deepCopy(state.sequenceList)
+  let currentIndex = state.currentIndex
+  let pIndex = findIndex(playlist, song)
+  playlist.splice(pIndex, 1)
+  let sIndex = findIndex(sequenceList, song)
+  sequenceList.splice(sIndex, 1)
+  // 播放的歌曲在删除歌曲之后 或者播放歌曲在最后一个
+  if (currentIndex > pIndex || currentIndex === playlist.length) {
+    currentIndex--
+  }
+
+  commit(types.SET_PLAYLIST, playlist)
+  commit(types.SET_SEQUENCE_LIST, sequenceList)
+  commit(types.SET_CURRENT_INDEX, currentIndex)
+
+  if (!playlist.length) {
+    commit(types.SET_PLAYING_STATE, false)
+  }
 }
