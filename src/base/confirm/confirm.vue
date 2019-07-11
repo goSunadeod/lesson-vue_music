@@ -1,5 +1,6 @@
 <template>
   <transition name="confirm-fade">
+    <!--confirm 点击事件不向上冒泡 将其截获-->
     <div class="confirm" v-show="showFlag" @click.stop>
       <div class="confirm-wrapper">
         <div class="confirm-content">
