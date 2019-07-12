@@ -15,6 +15,15 @@
           @switch="switchItem"
           :switches="switches"
           :currentIndex="currentIndex"></switches>
+        <div class="list-wrapper">
+          <scroll class="list-scroll" v-if="currentIndex === 0" :data="playHistory">
+            <div class="list-inner">
+              <song-list
+                @select="selectSong"
+                :songs="playHistory"></song-list>
+            </div>
+          </scroll>
+        </div>
       </div>
       <div class="search-result" v-show="query">
         <suggest :query="query"
@@ -31,9 +40,18 @@ import SearchBox from 'base/search-box/search-box'
 import Suggest from 'components/suggest/suggest'
 import {searchMixin} from 'common/js/mixin'
 import Switches from 'base/switches/switches'
+import Scroll from 'base/scroll/scroll'
+import {mapGetters, mapActions} from 'vuex'
+import SongList from 'base/song-list/song-list'
+import Song from 'common/js/song'
 export default {
   mixins: [searchMixin],
-  components: {SearchBox, Suggest, Switches},
+  components: {SearchBox, Suggest, Switches, Scroll, SongList},
+  computed: {
+    ...mapGetters([
+      'playHistory'
+    ])
+  },
   data() {
     return {
       showFlag: false,
@@ -56,7 +74,16 @@ export default {
     },
     switchItem(index) {
       this.currentIndex = index
-    }
+    },
+    selectSong(song, index) {
+      if (index !== 0) {
+        // 需new 一下转song实例，因为缓存保存字符
+        this.insertSong(new Song(song))
+      }
+    },
+    ...mapActions([
+      'insertSong'
+    ])
   }
 }
 </script>
