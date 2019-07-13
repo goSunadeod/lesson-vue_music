@@ -16,11 +16,20 @@
           :switches="switches"
           :currentIndex="currentIndex"></switches>
         <div class="list-wrapper">
-          <scroll class="list-scroll" v-if="currentIndex === 0" :data="playHistory">
+          <scroll ref="songListWrapper" class="list-scroll" v-if="currentIndex === 0" :data="playHistory">
             <div class="list-inner">
               <song-list
                 @select="selectSong"
                 :songs="playHistory"></song-list>
+            </div>
+          </scroll>
+          <scroll ref="searchListWrapper" class="list-scroll" v-if="currentIndex === 1" :data="searchHistory">
+            <div class="list-inner">
+              <search-list
+                :searches="searchHistory"
+                @select="addQuery"
+                @delete="deleteSearchHistory">
+              </search-list>
             </div>
           </scroll>
         </div>
@@ -44,9 +53,10 @@ import Scroll from 'base/scroll/scroll'
 import {mapGetters, mapActions} from 'vuex'
 import SongList from 'base/song-list/song-list'
 import Song from 'common/js/song'
+import SearchList from 'base/search-list/search-list'
 export default {
   mixins: [searchMixin],
-  components: {SearchBox, Suggest, Switches, Scroll, SongList},
+  components: {SearchBox, Suggest, Switches, Scroll, SongList, SearchList},
   computed: {
     ...mapGetters([
       'playHistory'
@@ -65,6 +75,13 @@ export default {
   methods: {
     show() {
       this.showFlag = true
+      setTimeout(() => {
+        if (this.currentIndex === 0) {
+          this.$refs.songListWrapper.refresh()
+        } else {
+          this.$refs.searchListWrapper.refresh()
+        }
+      }, 20)
     },
     hide() {
       this.showFlag = false
