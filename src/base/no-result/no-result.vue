@@ -1,3 +1,4 @@
+<!--无数据展示组件-->
 <template>
   <div class="no-result">
     <div class="no-result-icon"></div>

@@ -1,3 +1,4 @@
+<!--歌单列表组件-->
 <template>
   <div class="song-list">
     <ul>

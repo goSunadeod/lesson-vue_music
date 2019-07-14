@@ -1,3 +1,4 @@
+<!--提示确认框组件-->
 <template>
   <transition name="confirm-fade">
     <!--confirm 点击事件不向上冒泡 将其截获-->

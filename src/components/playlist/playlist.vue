@@ -10,7 +10,8 @@
             <span class="clear" @click="showConfirm"><i class="icon-clear"></i></span>
           </h1>
         </div>
-        <scroll class="list-content" :data="sequenceList" ref="listContent">
+        <!--refreshDelay 必须大于100 因为transition-group height变化动画为0.1s 动画结束 高度才正确 再refresh scroll-->
+        <scroll class="list-content" :data="sequenceList" ref="listContent" :refreshDelay="120">
           <transition-group name="list" tag="ul">
             <li ref="listItem" @click="selectItem(item, index)" class="item" v-for="(item, index) in sequenceList" :key="item.id">
               <i class="current" :class="getCurrentIcon(item)"></i>

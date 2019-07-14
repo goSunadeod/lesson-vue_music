@@ -1,3 +1,4 @@
+<!--基础滑动组件-->
 <template>
   <div ref="wrapper">
     <slot></slot>
@@ -31,6 +32,10 @@ export default {
     beforeScroll: {
       type: Boolean,
       default: false
+    },
+    refreshDelay: {
+      type: Number,
+      default: 20
     }
   },
   mounted() {
@@ -87,7 +92,7 @@ export default {
       handler(val, oldVal) {
         setTimeout(() => {
           this.refresh()
-        }, 20)
+        }, this.refreshDelay)
       },
       deep: true
     }

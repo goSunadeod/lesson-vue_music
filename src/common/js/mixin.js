@@ -66,7 +66,8 @@ export const playerMixin = {
 export const searchMixin = {
   data() {
     return {
-      query: ''
+      query: '',
+      refreshDelay: 100 // 动画结束为0.1s
     }
   },
   computed: {

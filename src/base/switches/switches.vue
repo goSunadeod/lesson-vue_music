@@ -1,3 +1,4 @@
+<!--切换tab组件-->
 <template>
   <ul class="switches">
     <li class="switch-item"

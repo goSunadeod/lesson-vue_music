@@ -1,3 +1,4 @@
+<!--列表组件-->
 <template>
   <scroll class="listview"
           :data="data"

@@ -1,3 +1,4 @@
+<!--头部搜索组件-->
 <template>
   <div class="search-box">
     <i class="icon-search"></i>

@@ -23,7 +23,7 @@
                 :songs="playHistory"></song-list>
             </div>
           </scroll>
-          <scroll ref="searchListWrapper" class="list-scroll" v-if="currentIndex === 1" :data="searchHistory">
+          <scroll ref="searchListWrapper" :refreshDelay="refreshDelay" class="list-scroll" v-if="currentIndex === 1" :data="searchHistory">
             <div class="list-inner">
               <search-list
                 :searches="searchHistory"
@@ -40,6 +40,15 @@
                  @listScroll="blurInput"
                  :showSinger="false"></suggest>
       </div>
+      <top-tip ref="tipTip">
+        <div class="tip-title">
+          <i class="icon-ok">
+            <span class="text">
+                1首歌曲已经添加到播放队列
+            </span>
+          </i>
+        </div>
+      </top-tip>
     </div>
   </transition>
 </template>
@@ -54,9 +63,10 @@ import {mapGetters, mapActions} from 'vuex'
 import SongList from 'base/song-list/song-list'
 import Song from 'common/js/song'
 import SearchList from 'base/search-list/search-list'
+import TopTip from 'base/top-tip/top-tip'
 export default {
   mixins: [searchMixin],
-  components: {SearchBox, Suggest, Switches, Scroll, SongList, SearchList},
+  components: {SearchBox, Suggest, Switches, Scroll, SongList, SearchList, TopTip},
   computed: {
     ...mapGetters([
       'playHistory'
@@ -88,6 +98,7 @@ export default {
     },
     selectSuggest() {
       this.saveSearch()
+      this.showTip()
     },
     switchItem(index) {
       this.currentIndex = index
@@ -96,7 +107,11 @@ export default {
       if (index !== 0) {
         // 需new 一下转song实例，因为缓存保存字符
         this.insertSong(new Song(song))
+        this.showTip()
       }
+    },
+    showTip() {
+      this.$refs.tipTip.show()
     },
     ...mapActions([
       'insertSong'

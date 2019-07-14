@@ -1,3 +1,4 @@
+<!--轮播图组件-->
 <template>
   <div class="slider" ref="slider">
     <div class="slider-group" ref="sliderGroup">

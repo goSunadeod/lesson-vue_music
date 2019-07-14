@@ -1,3 +1,4 @@
+<!--搜索到的列表展示组件-->
 <template>
   <div class="search-list" v-show="searches.length">
     <transition-group name="list" tag="ul">
