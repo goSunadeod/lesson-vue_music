@@ -83,6 +83,7 @@ app.use('/api', apiRoutes)
 
 app.use(express.static('./dist'))
 
+// 端口9000 在index.js build 下配置
 module.exports = app.listen(port, function (err) {
   if (err) {
     console.log(err)
