@@ -6,6 +6,10 @@ import store from './store'
 import fastclick from 'fastclick'
 import VueLazyLoad from 'vue-lazyload'
 import 'common/stylus/index.styl'
+/* eslint-disable no-unused-vars */
+import vConsole from 'common/js/vconsole'
+
+console.log('yesy')
 
 fastclick.attach(document.body)
 
