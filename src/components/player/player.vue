@@ -297,6 +297,8 @@ export default {
     },
     getLyric() {
       this.currentSong.getLyric().then((lyric) => {
+        // 防止切换歌曲过快，异步请求问题
+        if (this.currentSong.lyric !== lyric) return
         this.currentLyric = new Lyric(lyric, this.handleLyric)
         if (this.playing) {
           this.currentLyric.play()
@@ -414,7 +416,9 @@ export default {
       if (this.currentLyric) {
         this.currentLyric.stop()
       }
-      setTimeout(() => {
+      clearTimeout(this.timer)
+      // 手机切到后台再切到前台 顺利播放，给1秒延时 和 防止切换歌曲太快
+      this.timer = setTimeout(() => {
         this.$refs.audio.play()
         this.getLyric()
       }, 1000)
